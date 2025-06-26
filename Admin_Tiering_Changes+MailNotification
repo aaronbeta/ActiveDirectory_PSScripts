@@ -1,0 +1,20 @@
+### Admin Tiering Changes ###
+# Creates a file every and compares it after a certain amount of time #
+# If changes have been made - different notification #
+# Also sends a mail to check if the script worked #
+
+$smtp_user = "your smtp user"
+$smtp_server = "your smtp server"
+$smtp_recipient = "Recipient address"
+$ref=(Get-ADGroupMember -Identity "your admin tier group").Name
+Start-Sleep -Seconds 10500
+$diff=(Get-ADGroupMember -Identity "your admin tier group").Name
+$date=Get-Date -Format F
+$result=(Compare-Object -ReferenceObject $ref -DifferenceObject $diff | Where-Object {$_.SideIndicator -eq "=>"} | Select-Object -ExpandProperty InputObject) -join ", "
+$User = "your smtp user"
+$File = "your encrpyted file location"
+$MyCredential=New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $User, (Get-Content $File | ConvertTo-SecureString)
+If ($result)
+{Send-MailMessage -From $smtp_user -To $smtp_recipient -SmtpServer $smtp_server -Port 587 -Credential $MyCredential -usessl -Subject "Your Body" -Body "Your Body $date" -Priority High}
+else
+{Send-MailMessage -From $smtp_user -To $smtp_recipient -SmtpServer $smtp_server -Port 587 -Credential $MyCredential -usessl -Subject "Your subject" -Body "Your body."}
