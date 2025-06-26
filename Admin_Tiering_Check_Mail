@@ -1,0 +1,12 @@
+### Admin Tiering Email Notification Script via SMTP (587) ###
+# Notifies, if the Admin Tiering Script worked as intended #
+# Follow Up Script #
+# Only usable without 2FA SMTP#
+# Check MS Doc for password encryption via Powershell #
+
+$User = "Your SMTP USERMAIL"
+$Receiver = "Email ADDRESS AS RECIPIENT"
+$File = "FILE LOCATION OF ENCRYPTED PASSWORD"
+$SMTP = "Your SMTP Server ADDRESS"
+$MyCredential=New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $User, (Get-Content $File | ConvertTo-SecureString)
+Send-MailMessage -From $User e -To $Receiver -SmtpServer $SMTP -Port 587 -Credential $MyCredential -usessl -Subject "Your Subject" -Priority High
