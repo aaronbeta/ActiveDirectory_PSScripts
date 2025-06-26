@@ -1,0 +1,11 @@
+### Admin Tiering Automatic Reset ###
+# Filter By givenName AD Attribute #
+# E-Mail Notifications via SMTP  #
+
+Import-Module ActiveDirectory
+$level = 1
+$t_gname = "ADMIN_TIERGROUP"
+$t_group = (Get-ADGroup $t_gname).DistinguishedName
+Get-ADGroup $t_gname -Properties Members | Set-ADGroup -Clear Member
+
+get-aduser -searchbase "OU=,DC=" -properties * -filter *| Where-Object {$_.givenName -like "Tier $level"} | ForEach-Object -Process {Add-ADGroupMember -Server FQDN_SERVERNAME -Identity "$t_gname" -Members $_.SamAccountName}
